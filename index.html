@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <title>إلى سالي 🤍</title>
+  <meta name="description" content="هدية رومانسية تفاعلية إلى قلبي وملكتي سالي" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- خلفية النجوم المتحركة (مشتركة بين كل المشاهد) -->
+  <canvas id="stars-canvas" aria-hidden="true"></canvas>
+
+  <!-- حاوية القلوب المتطايرة -->
+  <div id="hearts-container" aria-hidden="true"></div>
+
+  <!-- حاوية الكونفيتي -->
+  <div id="confetti-container" aria-hidden="true"></div>
+
+  <!-- زر التحكم بالموسيقى -->
+  <button id="music-toggle" class="music-btn" aria-label="تشغيل أو إيقاف الموسيقى" aria-pressed="false">
+    <svg id="music-icon-play" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path d="M8 5v14l11-7z" fill="currentColor"/>
+    </svg>
+    <svg id="music-icon-pause" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" hidden>
+      <path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/>
+    </svg>
+  </button>
+  <!--
+    لإضافة موسيقى خلفية: ضعي ملف الصوت في مجلد assets باسم music.mp3
+    ثم أضيفي السطر التالي داخل وسم audio:
+    <source src="assets/music.mp3" type="audio/mpeg" />
+  -->
+  <audio id="bg-music" loop preload="none"></audio>
+
+  <!-- شريط تقدّم المشاهد -->
+  <div class="progress-track" role="progressbar" aria-label="تقدّم القصة" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+
+  <main id="app">
+
+    <!-- ============ المشهد 1: المقدمة ============ -->
+    <section class="scene active" id="scene-1" aria-label="المشهد الأول">
+      <div class="scene-inner">
+        <div class="typing-wrap">
+          <h1 class="typing-text" id="typing-text" aria-live="polite"></h1>
+          <span class="cursor" aria-hidden="true"></span>
+        </div>
+        <button class="btn btn-primary reveal-btn" id="scene1-next" hidden>
+          هل أنتِ مستعدة؟
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ المشهد 2: لعبة القلب ============ -->
+    <section class="scene" id="scene-2" aria-label="المشهد الثاني">
+      <div class="scene-inner">
+        <h2 class="scene-title" id="scene2-title">حاولي الإمساك بقلبي 🤍</h2>
+        <p class="scene-subtitle" id="scene2-counter">اضغطي عليه (0 / 5)</p>
+        <div class="heart-game-area" id="heart-game-area">
+          <button class="floating-heart-btn" id="game-heart" aria-label="اضغطي على القلب">🤍</button>
+        </div>
+        <p class="scene-message" id="scene2-message" hidden></p>
+        <button class="btn btn-primary" id="scene2-next" hidden>التالي</button>
+      </div>
+    </section>
+
+    <!-- ============ المشهد 3: تخمين الحب ============ -->
+    <section class="scene" id="scene-3" aria-label="المشهد الثالث">
+      <div class="scene-inner">
+        <h2 class="scene-title">خمّني مقدار حبي لك 💭</h2>
+        <form class="guess-form" id="guess-form">
+          <label for="guess-input" class="visually-hidden">اكتبي رقماً</label>
+          <input
+            type="text"
+            inputmode="decimal"
+            id="guess-input"
+            class="guess-input"
+            placeholder="اكتبي رقماً..."
+            autocomplete="off"
+            aria-describedby="guess-help"
+          />
+          <span id="guess-help" class="visually-hidden">أي إجابة ستكون خاطئة بطريقة جميلة</span>
+          <button type="submit" class="btn btn-primary">تخميني</button>
+        </form>
+        <p class="scene-message reveal-message" id="scene3-message" hidden>
+          لا يوجد رقم في هذا العالم يستطيع وصف مقدار حبي لك.<br />
+          حتى اللانهاية لا تكفي. ∞
+        </p>
+        <button class="btn btn-primary" id="scene3-next" hidden>التالي</button>
+      </div>
+    </section>
+
+    <!-- ============ المشهد 4: الظروف الخمسة ============ -->
+    <section class="scene" id="scene-4" aria-label="المشهد الرابع">
+      <div class="scene-inner">
+        <h2 class="scene-title">افتحي كل ظرف 💌</h2>
+        <p class="scene-subtitle" id="scene4-counter">0 / 5 ظروف مفتوحة</p>
+        <div class="envelopes-grid" id="envelopes-grid">
+          <!-- يتم إنشاء الظروف عبر JavaScript -->
+        </div>
+        <button class="btn btn-primary" id="scene4-next" hidden>التالي</button>
+      </div>
+    </section>
+
+    <!-- ============ المشهد 5: العداد ============ -->
+    <section class="scene" id="scene-5" aria-label="المشهد الخامس">
+      <div class="scene-inner">
+        <h2 class="scene-title">منذ تلك اللحظة...</h2>
+        <div class="counter-grid" id="counter-grid-1" aria-live="off">
+          <div class="counter-box">
+            <span class="counter-value" id="days-1">0</span>
+            <span class="counter-label">يوم</span>
+          </div>
+          <div class="counter-box">
+            <span class="counter-value" id="hours-1">0</span>
+            <span class="counter-label">ساعة</span>
+          </div>
+          <div class="counter-box">
+            <span class="counter-value" id="minutes-1">0</span>
+            <span class="counter-label">دقيقة</span>
+          </div>
+          <div class="counter-box">
+            <span class="counter-value" id="seconds-1">0</span>
+            <span class="counter-label">ثانية</span>
+          </div>
+        </div>
+        <p class="scene-subtitle counter-caption">
+          وفي كل ثانية...<br />يزداد حبي لك أكثر.
+        </p>
+        <button class="btn btn-primary" id="scene5-next">التالي</button>
+      </div>
+    </section>
+
+    <!-- ============ المشهد 6: أجمل شيء ============ -->
+    <section class="scene" id="scene-6" aria-label="المشهد السادس">
+      <div class="scene-inner">
+        <h2 class="scene-title">هل تعرفين ما أجمل شيء حدث لي؟</h2>
+        <button class="btn btn-primary" id="scene6-reveal-btn">اعرف</button>
+        <p class="scene-answer" id="scene6-answer" hidden>أنتِ 🤍</p>
+        <button class="btn btn-primary" id="scene6-next" hidden>التالي</button>
+      </div>
+    </section>
+
+    <!-- ============ المشهد الأخير: النهاية ============ -->
+    <section class="scene" id="scene-final" aria-label="المشهد الأخير">
+      <div class="scene-inner">
+        <div class="final-text" id="final-text">
+          <p class="fade-line">سالي...</p>
+          <p class="fade-line">ربما لا أملك كلمات تكفي...</p>
+          <p class="fade-line">لكنني صنعت هذا الموقع ليقول لك شيئاً واحداً...</p>
+          <p class="fade-line">أنتِ أجمل صدفة...</p>
+          <p class="fade-line">وأجمل اختيار...</p>
+          <p class="fade-line">وأجمل قصة بدأت في حياتي.</p>
+        </div>
+
+        <h2 class="final-title glow-text" id="final-title" hidden>🤍 أحبك يا سالي 🤍</h2>
+
+        <p class="final-date" id="final-date" hidden>
+          بدأت قصتنا في<br />
+          30/06/2026 — 03:30 مساءً
+        </p>
+
+        <div class="counter-grid" id="counter-grid-2" hidden aria-live="off">
+          <div class="counter-box">
+            <span class="counter-value" id="days-2">0</span>
+            <span class="counter-label">يوم</span>
+          </div>
+          <div class="counter-box">
+            <span class="counter-value" id="hours-2">0</span>
+            <span class="counter-label">ساعة</span>
+          </div>
+          <div class="counter-box">
+            <span class="counter-value" id="minutes-2">0</span>
+            <span class="counter-label">دقيقة</span>
+          </div>
+          <div class="counter-box">
+            <span class="counter-value" id="seconds-2">0</span>
+            <span class="counter-label">ثانية</span>
+          </div>
+        </div>
+
+        <div class="ending-question" id="ending-question" hidden>
+          <h3 class="scene-title">النهاية؟</h3>
+          <button class="btn btn-primary" id="ending-no-btn">لا...</button>
+          <p class="scene-answer" id="ending-final-line" hidden>هذه مجرد بداية قصتنا. ❤️</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="tracking.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

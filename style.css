@@ -1,0 +1,719 @@
+/* ==========================================================================
+   RESET & BASE
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* الألوان حسب project.md */
+  --color-bg: #070b17;
+  --color-card: #111827;
+  --color-accent: #f472b6;
+  --color-gold: #fbbf24;
+  --color-text: #ffffff;
+  --color-text-dim: rgba(255, 255, 255, 0.65);
+
+  /* مشتقات */
+  --color-accent-glow: rgba(244, 114, 182, 0.45);
+  --color-gold-glow: rgba(251, 191, 36, 0.4);
+  --glass-bg: rgba(17, 24, 39, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.12);
+
+  /* قياسات */
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-slow: 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+
+  --font-main: "Cairo", "Tajawal", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* تحسين الوصولية: إظهار outline عند التنقل بالكيبورد فقط */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   خلفية النجوم
+   ========================================================================== */
+#stars-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   القلوب المتطايرة
+   ========================================================================== */
+#hearts-container {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.floating-heart {
+  position: absolute;
+  bottom: -40px;
+  font-size: 1.4rem;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: floatUp linear forwards;
+  color: var(--color-accent);
+  filter: drop-shadow(0 0 6px var(--color-accent-glow));
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(var(--drift, 30px), -110vh, 0) scale(1.1) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   الكونفيتي
+   ========================================================================== */
+#confetti-container {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: confettiFall linear forwards;
+  border-radius: 2px;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift-x, 0), 105vh, 0) rotate(540deg);
+    opacity: 0.9;
+  }
+}
+
+/* ==========================================================================
+   زر الموسيقى
+   ========================================================================== */
+.music-btn {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 50;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+.music-btn:hover {
+  transform: scale(1.08);
+  background: rgba(244, 114, 182, 0.18);
+  box-shadow: 0 6px 22px var(--color-accent-glow);
+}
+
+.music-btn:active {
+  transform: scale(0.94);
+}
+
+.music-btn.playing {
+  color: var(--color-accent);
+  animation: pulseGlow 2.4s ease-in-out infinite;
+}
+
+.music-btn.shake-hint {
+  animation: shakeHint 0.4s ease;
+}
+
+@keyframes shakeHint {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 4px 22px var(--color-accent-glow);
+  }
+}
+
+/* ==========================================================================
+   شريط التقدّم
+   ========================================================================== */
+.progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.progress-fill {
+  height: 100%;
+  width: 16.66%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-gold));
+  transition: width var(--transition-slow);
+  box-shadow: 0 0 10px var(--color-accent-glow);
+}
+
+/* ==========================================================================
+   تخطيط المشاهد
+   ========================================================================== */
+#app {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.scene {
+  display: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+.scene.active {
+  display: flex;
+  animation: sceneFadeIn var(--transition-slow);
+}
+
+@keyframes sceneFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scene-inner {
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.scene-title {
+  font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+  font-weight: 800;
+  text-shadow: 0 0 18px var(--color-accent-glow);
+}
+
+.scene-subtitle {
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  color: var(--color-text-dim);
+  font-weight: 500;
+}
+
+.scene-message {
+  font-size: clamp(1.05rem, 3vw, 1.3rem);
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 22px 26px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  animation: scaleFadeIn var(--transition-medium);
+}
+
+.scene-answer {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+  color: var(--color-accent);
+  text-shadow: 0 0 22px var(--color-accent-glow);
+  animation: scaleFadeIn var(--transition-medium);
+}
+
+@keyframes scaleFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ==========================================================================
+   الأزرار
+   ========================================================================== */
+.btn {
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-main);
+  font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+  font-weight: 700;
+  color: var(--color-text);
+  background: linear-gradient(135deg, var(--color-accent), #ec4899);
+  border: none;
+  padding: 14px 34px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 24px var(--color-accent-glow);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px var(--color-accent-glow);
+  filter: brightness(1.08);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.96);
+  box-shadow: 0 4px 14px var(--color-accent-glow);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* تأثير Ripple */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to {
+    transform: scale(3.5);
+    opacity: 0;
+  }
+}
+
+.reveal-btn {
+  opacity: 0;
+  animation: scaleFadeIn var(--transition-medium) forwards;
+}
+
+/* ==========================================================================
+   المشهد 1: Typing Effect
+   ========================================================================== */
+.typing-wrap {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  min-height: 4.5rem;
+  flex-wrap: wrap;
+}
+
+.typing-text {
+  font-size: clamp(1.4rem, 5vw, 2.4rem);
+  font-weight: 800;
+  text-shadow: 0 0 20px var(--color-accent-glow);
+}
+
+.cursor {
+  display: inline-block;
+  width: 3px;
+  height: clamp(1.6rem, 5vw, 2.2rem);
+  background: var(--color-gold);
+  animation: blink 0.9s step-end infinite;
+  box-shadow: 0 0 8px var(--color-gold-glow);
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   المشهد 2: لعبة القلب
+   ========================================================================== */
+.heart-game-area {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 320px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+.floating-heart-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.6rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  filter: drop-shadow(0 0 12px var(--color-accent-glow));
+  transition: top var(--transition-medium), left var(--transition-medium), transform var(--transition-fast);
+  padding: 10px;
+}
+
+.floating-heart-btn:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.floating-heart-btn:active {
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+/* ==========================================================================
+   المشهد 3: نموذج التخمين
+   ========================================================================== */
+.guess-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.guess-input {
+  font-family: var(--font-main);
+  font-size: 1.05rem;
+  color: var(--color-text);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 14px 20px;
+  border-radius: 999px;
+  text-align: center;
+  width: 220px;
+  max-width: 70vw;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.guess-input::placeholder {
+  color: var(--color-text-dim);
+}
+
+.guess-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 16px var(--color-accent-glow);
+}
+
+.reveal-message {
+  margin-top: 6px;
+}
+
+/* ==========================================================================
+   المشهد 4: الظروف
+   ========================================================================== */
+.envelopes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+.envelope {
+  position: relative;
+  aspect-ratio: 1 / 0.8;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--color-gold);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.envelope:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 10px 26px var(--color-gold-glow);
+}
+
+.envelope:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.envelope.opened {
+  cursor: default;
+  color: var(--color-accent);
+  background: rgba(244, 114, 182, 0.1);
+}
+
+.envelope.opened:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.envelope-icon {
+  transition: transform var(--transition-medium), opacity var(--transition-medium);
+}
+
+.envelope.opened .envelope-icon {
+  transform: scale(0);
+  opacity: 0;
+  position: absolute;
+}
+
+.envelope-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity var(--transition-medium), transform var(--transition-medium);
+}
+
+.envelope.opened .envelope-text {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ==========================================================================
+   العداد (مستخدم في مشهدين)
+   ========================================================================== */
+.counter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.counter-box {
+  background: var(--color-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.counter-value {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 800;
+  color: var(--color-gold);
+  text-shadow: 0 0 14px var(--color-gold-glow);
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-label {
+  font-size: 0.78rem;
+  color: var(--color-text-dim);
+}
+
+.counter-caption {
+  text-align: center;
+  margin-top: -4px;
+}
+
+/* ==========================================================================
+   المشهد الأخير
+   ========================================================================== */
+.final-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: clamp(1.05rem, 3vw, 1.3rem);
+  font-weight: 500;
+}
+
+.fade-line {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: scaleFadeIn var(--transition-medium) forwards;
+}
+
+.final-title {
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  font-weight: 900;
+  opacity: 0;
+  animation: scaleFadeIn var(--transition-slow) forwards;
+}
+
+.glow-text {
+  color: var(--color-accent);
+  text-shadow: 0 0 18px var(--color-accent-glow), 0 0 36px var(--color-gold-glow);
+  animation: scaleFadeIn var(--transition-slow) forwards, glowPulse 3s ease-in-out 1s infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 0 0 18px var(--color-accent-glow), 0 0 36px var(--color-gold-glow);
+  }
+  50% {
+    text-shadow: 0 0 28px var(--color-accent-glow), 0 0 50px var(--color-gold-glow);
+  }
+}
+
+.final-date {
+  color: var(--color-text-dim);
+  font-weight: 500;
+  opacity: 0;
+  animation: scaleFadeIn var(--transition-medium) forwards;
+}
+
+.ending-question {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  opacity: 0;
+  animation: scaleFadeIn var(--transition-medium) forwards;
+}
+
+/* ==========================================================================
+   استجابة الشاشات الصغيرة
+   ========================================================================== */
+@media (max-width: 480px) {
+  .scene {
+    padding: 24px 16px;
+  }
+
+  .counter-grid {
+    gap: 8px;
+  }
+
+  .counter-box {
+    padding: 12px 4px;
+  }
+
+  .heart-game-area {
+    height: 280px;
+  }
+
+  .envelopes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 360px) {
+  .envelopes-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* تقليل الحركة لمن يفضّل ذلك */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
